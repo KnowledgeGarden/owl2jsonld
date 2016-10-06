@@ -4,7 +4,6 @@
 package org.topicquests.ontology.owl;
 
 import org.topicquests.ontology.owl.jena.JenaMemoryModel;
-import org.topicquests.ontology.owl.json.JSONOwlModel;
 import org.topicquests.util.LoggingPlatform;
 
 /**
@@ -14,7 +13,6 @@ import org.topicquests.util.LoggingPlatform;
 public class Environment {
 	private LoggingPlatform log=null;
 	private JenaMemoryModel jenaModel;
-	private JSONOwlModel jsonModel;
 
 	/**
 	 * if any <code>args</code> then process all files in /data
@@ -23,7 +21,6 @@ public class Environment {
 	public Environment(String [] args) {
 		log = LoggingPlatform.getInstance("logger.properties"); 
 		jenaModel = new JenaMemoryModel(this);
-		jsonModel = new JSONOwlModel(this);
 		if (args.length > 0)
 			doProcess();
 	}
@@ -36,9 +33,6 @@ public class Environment {
 		return jenaModel;
 	}
 	
-	public JSONOwlModel getJSONModel() {
-		return jsonModel;
-	}
 	/**
 	 * @param args
 	 */

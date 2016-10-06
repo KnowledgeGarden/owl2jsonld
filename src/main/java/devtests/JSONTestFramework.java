@@ -16,7 +16,8 @@ public class JSONTestFramework {
 		System.out.println("STARTING");
 		//new FirstTest();
 		//new SecondTest();
-		new Test3();
+		//new Test3();
+		new ThirdTest();
 		System.out.println("ENDING");
 	}
 

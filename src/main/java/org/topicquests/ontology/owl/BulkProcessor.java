@@ -17,9 +17,10 @@ import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.topicquests.common.api.IResult;
 import org.topicquests.ontology.owl.jena.JenaMemoryModel;
-import org.topicquests.ontology.owl.json.JSONOwlModel;
 
 /**
  * @author Admin
@@ -28,7 +29,6 @@ import org.topicquests.ontology.owl.json.JSONOwlModel;
 public class BulkProcessor {
 	private Environment environment;
 	private JenaMemoryModel model;
-	private JSONOwlModel json;
 	private final String source = "data";
 	private final String target = "output/";
 
@@ -38,7 +38,6 @@ public class BulkProcessor {
 	public BulkProcessor(Environment env) {
 		environment = env;
 		model = environment.getJenaModel();
-		json = environment.getJSONModel();
 	}
 
 	public void go() {
@@ -49,13 +48,13 @@ public class BulkProcessor {
 		IResult r;
 		OntModel ont;
 		JSONObject jo;
+		String pth;
 		for (int i=0;i<len;i++) {
 			f = files[i];
-			System.out.println("PROCESSING "+f.getAbsolutePath());
-			ont = model.loadOwlFile(f.getAbsolutePath());
-			jo = json.processOWLOntology(ont);
-			if (jo != null)
-				saveDocument(f, jo.toJSONString());
+			pth = f.getAbsolutePath();
+			System.out.println("PROCESSING "+pth);
+			ont = model.loadOwlFile(pth);
+			saveDocument(pth, ont);
 		}
 	}
 	
@@ -73,25 +72,21 @@ public class BulkProcessor {
 	}
 
 	
-	private void saveDocument(File fx, String doc) {
-		String filename = pathToFilename(fx.getAbsolutePath());
+	void saveDocument(String path, OntModel ont) {
+		String filename = pathToFilename(path);
 		File f = new File(filename);
 		System.out.println("Saving "+f.getPath());
 		try {
 			FileOutputStream fos = new FileOutputStream(f);
 			PrintWriter out; 
 			GZIPOutputStream gos = new GZIPOutputStream(fos);
-			BufferedWriter bfw = new BufferedWriter(new OutputStreamWriter(gos, StandardCharsets.UTF_8));
-			out = new PrintWriter(bfw);
-
-			out.print(doc);
-			out.flush();
-			out.close();
+			RDFDataMgr.write(gos, ont, Lang.JSONLD);
+			gos.flush();
+			gos.close();
 			out = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 
 }
